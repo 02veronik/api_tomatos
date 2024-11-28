@@ -16,6 +16,8 @@ from io import BytesIO
 from PIL import Image
 from pydantic import BaseModel
 from fastapi import HTTPException
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -83,7 +85,22 @@ def predict_image(img_path):
 
 class ImageRequest(BaseModel):
     image_url: str
-    
+
+
+# Configurar CORS para permitir solicitudes desde localhost:8100
+origins = [
+    "http://localhost:8100",  # Dirección de tu aplicación Ionic
+    "http://127.0.0.1:8100",  # Dirección alternativa para localhost
+]
+
+# Agregar middleware CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Orígenes permitidos
+    allow_credentials=True,
+    allow_methods=["*"],  # Permitir todos los métodos (GET, POST, etc.)
+    allow_headers=["*"],  # Permitir todos los encabezados
+)
  
 
 # Endpoint para recibir imagen y devolver predicción
