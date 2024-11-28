@@ -1,0 +1,9 @@
+fastapi
+tensorflow
+joblib
+requests
+firebase-admin
+pillow
+uvicorn[gunicorn]
+pydantic
+dotenv

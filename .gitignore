@@ -1,0 +1,4 @@
+.env
+
+#modelo que pesa mucho
+svm_model.pkl

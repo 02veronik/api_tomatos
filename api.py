@@ -1,7 +1,8 @@
 
 
 
-import datetime 
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI, UploadFile
 from tensorflow.keras.models import load_model
 import joblib
@@ -18,11 +19,20 @@ from fastapi import HTTPException
 
 app = FastAPI()
 
-# Cargar modelos y clases al inicio
-base_model = load_model("C:/Users/ALEXANDER/Documents/X_Ciclo/TESIS/PROYECTO/api/base_model.h5")
-svm_model = joblib.load("C:/Users/ALEXANDER/Documents/X_Ciclo/TESIS/PROYECTO/api/svm_model.pkl")
+# Cargar variables de entorno
+load_dotenv()
 
-with open("C:/Users/ALEXANDER/Documents/X_Ciclo/TESIS/PROYECTO/api/ID_names.json", "r") as f:
+# Cargar rutas desde variables de entorno
+base_model_path = os.getenv("BASE_MODEL_PATH")
+svm_model_path = os.getenv("SVM_MODEL_PATH")
+id_names_path = os.getenv("ID_NAMES_PATH")
+firebase_credentials_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
+
+# Cargar modelos y clases al inicio
+base_model = load_model(base_model_path)
+svm_model = joblib.load(svm_model_path)
+
+with open(id_names_path, "r") as f:
     id_names = json.load(f)
 
 class_name = list(id_names.keys())
@@ -30,7 +40,7 @@ print (class_name)
 print ("id", id_names)
 
 # Inicializar Firebase
-cred = credentials.Certificate("C:/Users/ALEXANDER/Documents/X_Ciclo/TESIS/PROYECTO/api/tomatoshield-e6392-firebase-adminsdk-x8ziu-a2ee73175e.json")
+cred = credentials.Certificate(firebase_credentials_path)
 firebase_admin.initialize_app(cred) 
 db = firestore.client()
 
