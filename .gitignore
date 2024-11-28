@@ -2,3 +2,6 @@
 
 #modelo que pesa mucho
 svm_model.pkl
+
+#credenciales firebase
+tomatoshield-e6392-firebase-adminsdk-x8ziu-a2ee73175e.json
