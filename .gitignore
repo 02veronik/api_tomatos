@@ -6,5 +6,15 @@ svm_model.pkl
 #credenciales firebase
 tomatoshield-e6392-firebase-adminsdk-x8ziu-a2ee73175e.json
 
+**pycache**/api.cpython-310.**pycache**
 
-__pycache__/api.cpython-310.pyc
+__pycache__
+
+__pycache__/api.cpython-310.pyc 
+
+
+Dockerfile
+.dockerignore
+
+base_model.h5.gz
+svm_model.pkl.gz

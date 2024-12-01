@@ -1,19 +1,12 @@
-
-
-
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI 
 from tensorflow.keras.models import load_model
 import joblib
 import numpy as np
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
-import json
-import firebase_admin
-from firebase_admin import credentials, firestore
-import requests
-from io import BytesIO
-from PIL import Image
+import json  
+import requests  
 from pydantic import BaseModel
 from fastapi import HTTPException
 from fastapi import FastAPI
@@ -27,8 +20,7 @@ load_dotenv()
 # Cargar rutas desde variables de entorno
 base_model_path = os.getenv("BASE_MODEL_PATH")
 svm_model_path = os.getenv("SVM_MODEL_PATH")
-id_names_path = os.getenv("ID_NAMES_PATH")
-firebase_credentials_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
+id_names_path = os.getenv("ID_NAMES_PATH") 
 
 # Cargar modelos y clases al inicio
 base_model = load_model(base_model_path)
@@ -37,14 +29,8 @@ svm_model = joblib.load(svm_model_path)
 with open(id_names_path, "r") as f:
     id_names = json.load(f)
 
-class_name = list(id_names.keys())
-print (class_name)
-print ("id", id_names)
-
-# Inicializar Firebase
-cred = credentials.Certificate(firebase_credentials_path)
-firebase_admin.initialize_app(cred) 
-db = firestore.client()
+class_name = list(id_names.keys())  
+ 
 
 def download_image_from_url(url, img_path):
     try:
@@ -56,9 +42,8 @@ def download_image_from_url(url, img_path):
         # Captura cualquier error relacionado con la solicitud HTTP
         raise HTTPException(400, detail=f"Error al descargar la imagen: {str(e)}")
 
-
-
-# Función de predicción modificada
+ 
+# Función de predicción   
 def predict_image(img_path):
     try:
         img = load_img(img_path, target_size=(224, 224))
@@ -75,7 +60,8 @@ def predict_image(img_path):
         
         # Obtener la ID desde ID_names
         if predicted_class in id_names:
-            return id_names[predicted_class]  # Devuelve directamente la ID asociada
+            predicted_id = id_names[predicted_class]
+            return {"id": predicted_id, "classname": predicted_class}  # Devuelve ambos valores
         else:
             raise ValueError(f"No se encontró información para la plaga: {predicted_class}")
      
@@ -104,7 +90,7 @@ app.add_middleware(
  
 
 # Endpoint para recibir imagen y devolver predicción
-@app.post("/predict/")
+@app.post("/prediccion/")
 async def predict(image_request: ImageRequest):
     try:
         image_url = image_request.image_url
@@ -115,10 +101,10 @@ async def predict(image_request: ImageRequest):
         download_image_from_url(image_url, img_path)
 
         # Realizar predicción
-        plaga_detectada = predict_image(img_path)
+        resultado_prediccion = predict_image(img_path)
 
         # Retornar solo el nombre de la plaga detectada
-        return {"plaga_detectada": plaga_detectada}
+        return resultado_prediccion 
 
     except HTTPException as e:
         # Maneja excepciones HTTP relacionadas con la descarga o la predicción
